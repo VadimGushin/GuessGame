@@ -5,8 +5,15 @@
              xmlns:local="clr-namespace:GuessGame"
              x:Class="GuessGame.MainPage">
 
-    <StackLayout>
-        <local:TouchCanvasView x:Name="canvasView" PaintSurface="OnPainting" Touched="OnTouched" />
-    </StackLayout>
+    <Grid>
+        <Grid x:Name="GridCanvas">
+            <skia:SKCanvasView x:Name="CanvasView" PaintSurface="OnPainting" EnableTouchEvents="True" Touch="OnTouch" BackgroundColor="Red" />
+        </Grid>
+        <StackLayout HorizontalOptions="End" VerticalOptions="End">
+            <Button Text="Cleane" Clicked="Cleane_Click"  />
+            <Button Text="Save" Clicked="Save_Click"/>
+        </StackLayout>
+
+    </Grid>
 
 </ContentPage>

@@ -2,6 +2,7 @@
 using SkiaSharp.Views.Forms;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,63 +12,123 @@ namespace GuessGame
 {
     public partial class MainPage : ContentPage
     {
-        private readonly List<Tuple<SKPoint, SKColor>> points = new List<Tuple<SKPoint, SKColor>>();
-        private readonly Random random = new Random();
+        private Dictionary<long, SKPath> temporaryPaths = new Dictionary<long, SKPath>();
+        private List<SKPath> paths = new List<SKPath>();
+        private SKCanvas canvas;
+        private SKSurface surface;
 
         public MainPage()
         {
             InitializeComponent();
         }
-        private void OnTouched(SKPoint point)
-        {
-            var color = new SKColor((byte)random.Next(256), (byte)random.Next(256), (byte)random.Next(256));
-            points.Add(new Tuple<SKPoint, SKColor>(point, color));
-
-            canvasView.InvalidateSurface();
-        }
 
         private void OnPainting(object sender, SKPaintSurfaceEventArgs e)
         {
-            var canvas = e.Surface.Canvas;
+            // CLEARING THE SURFACE
 
-            // scale the canvas up (for higher resolution screens)
-            var scale = e.Info.Width / (float)Width;
-            canvas.Scale(scale);
-
-
-            // make the surface nice
+            // we get the current surface from the event args
+            surface = e.Surface;
+            // then we get the canvas that we can draw on
+            canvas = surface.Canvas;
+            // clear the canvas / view
             canvas.Clear(SKColors.White);
+            
+            // DRAWING TOUCH PATHS
 
-
-            // draw the dots
-            var dotPaint = new SKPaint
+            // create the paint for the touch path
+            var touchPathStroke = new SKPaint
             {
                 IsAntialias = true,
-                Style = SKPaintStyle.Fill
+                Style = SKPaintStyle.Stroke,
+                Color = SKColors.Purple,
+                StrokeWidth = 5
             };
-            foreach (var point in points)
+
+            // draw the paths
+            foreach (var touchPath in temporaryPaths)
             {
-                dotPaint.Color = point.Item2;
-                canvas.DrawCircle(point.Item1.X, point.Item1.Y, 10, dotPaint);
+                canvas.DrawPath(touchPath.Value, touchPathStroke);
+            }
+            foreach (var touchPath in paths)
+            {
+                canvas.DrawPath(touchPath, touchPathStroke);
             }
 
-
-            // draw the instructions
-            var textPaint = new SKPaint
+            if (isSave)
             {
-                IsAntialias = true,
-                Color = SKColors.Brown,
-                Style = SKPaintStyle.Fill,
-                TextSize = 48,
-                TextAlign = SKTextAlign.Center,
-                Typeface = SKTypeface.FromFamilyName("Arial", SKTypefaceStyle.Bold)
-            };
-            canvas.DrawText("tap 4 dots!", (float)Width / 2, 50, textPaint);
-            // give it a border
-            textPaint.Style = SKPaintStyle.Stroke;
-            textPaint.StrokeWidth = 1;
-            textPaint.Color = SKColors.White;
-            canvas.DrawText("tap 4 dots!", (float)Width / 2, 50, textPaint);
+                SKImage skimage = surface.Snapshot();
+                //image.
+                SKBitmap bitmap = SKBitmap.FromImage(skimage);
+                using (var scaledBitmap = bitmap.Resize(new SKImageInfo(500, 100), SKBitmapResizeMethod.Lanczos3))
+                {
+                    using (var image = SKImage.FromBitmap(scaledBitmap))
+                    {
+                        using (var png = image.Encode(SKEncodedImageFormat.Png, 100))
+                        {
+                            File.Create("C:\\AZ\\scaled.png");
+                            using (var filestream = File.OpenWrite("C:\\AZ\\scaled.png"))
+                            {
+                                png.SaveTo(filestream);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void OnTouch(object sender, SKTouchEventArgs e)
+        {
+            switch (e.ActionType)
+            {
+                case SKTouchAction.Pressed:
+                    // start of a stroke
+                    var p = new SKPath();
+                    p.MoveTo(e.Location);
+                    temporaryPaths[e.Id] = p;
+                    break;
+                case SKTouchAction.Moved:
+                    // the stroke, while pressed
+                    if (e.InContact)
+                        temporaryPaths[e.Id].LineTo(e.Location);
+                    break;
+                case SKTouchAction.Released:
+                    // end of a stroke
+                    paths.Add(temporaryPaths[e.Id]);
+                    temporaryPaths.Remove(e.Id);
+                    break;
+                case SKTouchAction.Cancelled:
+                    // we don't want that stroke
+                    temporaryPaths.Remove(e.Id);
+                    break;
+            }
+
+            // we have handled these events
+            e.Handled = true;
+           
+          
+            ((SKCanvasView)sender).InvalidateSurface();
+        }
+
+        private void Cleane_Click(object sender, EventArgs e)
+        {
+            temporaryPaths.Clear();
+            paths.Clear();
+            GridCanvas.Children.Clear();
+            GridCanvas.Children.Add(CanvasView);
+        }
+        private bool isSave;
+        private void Save_Click(object sender, EventArgs e)
+        {
+            isSave = true;
+            //var matrix = canvas.TotalMatrix;
+            //matrix.
+
+            //SKBitmap bitmap = new SKBitmap(100, 100, SKImageInfo.PlatformColorType, SKAlphaType.Premul);
+            //var surface = SKSurface.Create(bitmap.Info);
+            //var image = SKImage.FromBitmap(bitmap);
+            ////bitmap.
+            //canvas.
+            //image.a
         }
     }
 }
