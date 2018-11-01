@@ -16,6 +16,7 @@ namespace GuessGame
         private List<SKPath> paths = new List<SKPath>();
         private SKCanvas canvas;
         private SKSurface surface;
+        SKImage skimage;
 
         public MainPage()
         {
@@ -40,7 +41,7 @@ namespace GuessGame
             {
                 IsAntialias = true,
                 Style = SKPaintStyle.Stroke,
-                Color = SKColors.Purple,
+                Color = SKColors.Black,
                 StrokeWidth = 5
             };
 
@@ -54,26 +55,39 @@ namespace GuessGame
                 canvas.DrawPath(touchPath, touchPathStroke);
             }
 
-            if (isSave)
-            {
-                SKImage skimage = surface.Snapshot();
-                //image.
+                skimage = surface.Snapshot();
                 SKBitmap bitmap = SKBitmap.FromImage(skimage);
-                using (var scaledBitmap = bitmap.Resize(new SKImageInfo(500, 100), SKBitmapResizeMethod.Lanczos3))
-                {
-                    using (var image = SKImage.FromBitmap(scaledBitmap))
-                    {
-                        using (var png = image.Encode(SKEncodedImageFormat.Png, 100))
-                        {
-                            File.Create("C:\\AZ\\scaled.png");
-                            using (var filestream = File.OpenWrite("C:\\AZ\\scaled.png"))
-                            {
-                                png.SaveTo(filestream);
-                            }
-                        }
-                    }
-                }
-            }
+            var scaledBitmap = bitmap.Resize(new SKImageInfo(100, 100), SKBitmapResizeMethod.Triangle);
+                skimage = SKImage.FromBitmap(scaledBitmap);
+                //SKImage snapI = e.Surface.Snapshot();
+
+            //var x = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "FolderName");
+            //var fullpath = x + "PicName.png";
+            //File.WriteAllBytes(fullpath, pngImage.ToArray());
+            //SKBitmap bitmap = SKBitmap.Decode(fullpath);
+            //var dstInfo = new SKImageInfo(1060, 550);
+
+            //bitmap.Resize(dstInfo, SKBitmapResizeMethod.Hamming);
+            ////image.
+            //SKBitmap bitmap = SKBitmap.FromImage(skimage);
+            ////bitmap.Resize(new SKImageInfo(100, 100), SKBitmapResizeMethod.Lanczos3);
+            //var byteArray = bitmap.Bytes;
+            //Stream stream = new MemoryStream(byteArray);
+            //ImageDim.Source = ImageSource.FromStream(()=> { return stream; });
+            //using (var scaledBitmap = bitmap.Resize(new SKImageInfo(500, 100), SKBitmapResizeMethod.Lanczos3))
+            //{
+            //    using (var image = SKImage.FromBitmap(scaledBitmap))
+            //    {
+            //        using (var png = image.Encode(SKEncodedImageFormat.Png, 100))
+            //        {
+            //            File.Create("C:\\AZ\\scaled.png");
+            //            using (var filestream = File.OpenWrite("C:\\AZ\\scaled.png"))
+            //            {
+            //                png.SaveTo(filestream);
+            //            }
+            //        }
+            //    }
+            //}
         }
 
         private void OnTouch(object sender, SKTouchEventArgs e)
@@ -116,19 +130,19 @@ namespace GuessGame
             GridCanvas.Children.Clear();
             GridCanvas.Children.Add(CanvasView);
         }
-        private bool isSave;
         private void Save_Click(object sender, EventArgs e)
         {
-            isSave = true;
-            //var matrix = canvas.TotalMatrix;
-            //matrix.
+            if (skimage == null)
+            {
+                return;
+            }
+            SKData pngImage = skimage.Encode();
+            var byteArray = pngImage.ToArray();
+            Stream stream = new MemoryStream(byteArray);
+            ImageDim.Source = ImageSource.FromStream(() => { return stream; });
 
-            //SKBitmap bitmap = new SKBitmap(100, 100, SKImageInfo.PlatformColorType, SKAlphaType.Premul);
-            //var surface = SKSurface.Create(bitmap.Info);
-            //var image = SKImage.FromBitmap(bitmap);
-            ////bitmap.
-            //canvas.
-            //image.a
+            SKBitmap bitmap = SKBitmap.FromImage(skimage);
+            var arrColors = bitmap.Pixels;
         }
     }
 }

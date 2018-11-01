@@ -6,10 +6,16 @@
              x:Class="GuessGame.MainPage">
 
     <Grid>
-        <Grid x:Name="GridCanvas">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" x:Name="GridCanvas">
             <skia:SKCanvasView x:Name="CanvasView" PaintSurface="OnPainting" EnableTouchEvents="True" Touch="OnTouch" BackgroundColor="Red" />
         </Grid>
-        <StackLayout HorizontalOptions="End" VerticalOptions="End">
+        <Image Grid.Row="1" x:Name="ImageDim" WidthRequest="100" HeightRequest="100" />
+        <StackLayout Grid.RowSpan="2" HorizontalOptions="End" Orientation="Horizontal" VerticalOptions="End">
+            
             <Button Text="Cleane" Clicked="Cleane_Click"  />
             <Button Text="Save" Clicked="Save_Click"/>
         </StackLayout>
