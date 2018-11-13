@@ -56,10 +56,7 @@ namespace GuessGame
             }
 
                 skimage = surface.Snapshot();
-                SKBitmap bitmap = SKBitmap.FromImage(skimage);
-            var scaledBitmap = bitmap.Resize(new SKImageInfo(100, 100), SKBitmapResizeMethod.Triangle);
-                skimage = SKImage.FromBitmap(scaledBitmap);
-                //SKImage snapI = e.Surface.Snapshot();
+           //SKImage snapI = e.Surface.Snapshot();
 
             //var x = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "FolderName");
             //var fullpath = x + "PicName.png";
@@ -130,19 +127,29 @@ namespace GuessGame
             GridCanvas.Children.Clear();
             GridCanvas.Children.Add(CanvasView);
         }
+
         private void Save_Click(object sender, EventArgs e)
         {
             if (skimage == null)
             {
                 return;
             }
+            SKBitmap bitmap = SKBitmap.FromImage(skimage);
+            var scaledBitmap = bitmap.Resize(new SKImageInfo(100, 100), SKBitmapResizeMethod.Triangle);
+            skimage = SKImage.FromBitmap(scaledBitmap);
+            bitmap = SKBitmap.FromImage(skimage);
+
             SKData pngImage = skimage.Encode();
             var byteArray = pngImage.ToArray();
             Stream stream = new MemoryStream(byteArray);
             ImageDim.Source = ImageSource.FromStream(() => { return stream; });
+            SKColor[] arrColors = bitmap.Pixels;
+            List<bool> boolImage = new List<bool>();
+            foreach (var item in arrColors)
+            {
+                boolImage.Add(item.ToFormsColor() == Color.Black);
+            }
 
-            SKBitmap bitmap = SKBitmap.FromImage(skimage);
-            var arrColors = bitmap.Pixels;
         }
     }
 }
