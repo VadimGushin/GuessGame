@@ -10,10 +10,17 @@
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" x:Name="GridCanvas" WidthRequest="100" HeightRequest="100" BackgroundColor="WhiteSmoke">
-            <skia:SKCanvasView x:Name="CanvasView" WidthRequest="100" HeightRequest="100" PaintSurface="OnPainting" EnableTouchEvents="True" Touch="OnTouch" />
+        <Grid Grid.Row="0" x:Name="GridCanvas" RowSpacing="10" Padding="50" BackgroundColor="WhiteSmoke">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="100"/>
+                <RowDefinition Height="100"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"/>
+            </Grid.ColumnDefinitions>
+            <skia:SKCanvasView x:Name="CanvasView" Grid.Row="0" PaintSurface="OnPainting" EnableTouchEvents="True" Touch="OnTouch" />
+            <Image Grid.Row="1" x:Name="ImageDim" WidthRequest="100" HeightRequest="100" />
         </Grid>
-        <Image Grid.Row="1" x:Name="ImageDim" WidthRequest="100" HeightRequest="100" />
         <StackLayout Grid.RowSpan="2" HorizontalOptions="End" Orientation="Horizontal" VerticalOptions="End">
             
             <Button Text="Cleane" Clicked="Cleane_Click"  />
