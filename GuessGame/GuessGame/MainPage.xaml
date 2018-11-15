@@ -24,7 +24,10 @@
         <StackLayout Grid.RowSpan="2" HorizontalOptions="End" Orientation="Horizontal" VerticalOptions="End">
             
             <Button Text="Cleane" Clicked="Cleane_Click"  />
-            <Button Text="Save" Clicked="Save_Click"/>
+            <!--<Button Text="Save" Clicked="Save_Click"/>-->
+            <Button Text="Leaning" Clicked="Leaning_Click"/>
+            <Button Text="Check" Clicked="Check_Click"/>
+            <Editor x:Name="NamePicture" />
         </StackLayout>
 
     </Grid>
