@@ -12,11 +12,11 @@
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" x:Name="GridCanvas" RowSpacing="10" Padding="50" BackgroundColor="WhiteSmoke">
             <Grid.RowDefinitions>
-                <RowDefinition Height="100"/>
+                <RowDefinition Height="400"/>
                 <RowDefinition Height="100"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="400"/>
             </Grid.ColumnDefinitions>
             <skia:SKCanvasView x:Name="CanvasView" Grid.Row="0" PaintSurface="OnPainting" EnableTouchEvents="True" Touch="OnTouch" />
             <Image Grid.Row="1" x:Name="ImageDim" WidthRequest="100" HeightRequest="100" />

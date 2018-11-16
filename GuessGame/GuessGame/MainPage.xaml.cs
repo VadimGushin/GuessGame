@@ -108,7 +108,7 @@ namespace GuessGame
                 return;
             }
             SKBitmap bitmap = SKBitmap.FromImage(skimage);
-            var scaledBitmap = bitmap.Resize(new SKImageInfo(100, 100), SKBitmapResizeMethod.Triangle);
+            var scaledBitmap = bitmap.Resize(new SKImageInfo(400, 400), SKBitmapResizeMethod.Triangle);
             skimage = SKImage.FromBitmap(scaledBitmap);
             bitmap = SKBitmap.FromImage(skimage);
 
@@ -133,7 +133,7 @@ namespace GuessGame
                 return;
             }
             SKBitmap bitmap = SKBitmap.FromImage(skimage);
-            var scaledBitmap = bitmap.Resize(new SKImageInfo(100, 100), SKBitmapResizeMethod.Triangle);
+            var scaledBitmap = bitmap.Resize(new SKImageInfo(400, 400), SKBitmapResizeMethod.Triangle);
             skimage = SKImage.FromBitmap(scaledBitmap);
             bitmap = SKBitmap.FromImage(skimage);
 
@@ -188,6 +188,9 @@ namespace GuessGame
                 }
                 answers.Add(answer);
             }
+            NamePicture.Text = string.Empty;
+            Cleane_Click(null, null);
+            DisplayAlert("Status", "Success", "ok");
         }
 
         private void Check_Click(object sender, EventArgs e)
@@ -198,7 +201,7 @@ namespace GuessGame
                 return;
             }
             SKBitmap bitmap = SKBitmap.FromImage(skimage);
-            var scaledBitmap = bitmap.Resize(new SKImageInfo(100, 100), SKBitmapResizeMethod.Triangle);
+            var scaledBitmap = bitmap.Resize(new SKImageInfo(400, 400), SKBitmapResizeMethod.Triangle);
             skimage = SKImage.FromBitmap(scaledBitmap);
             bitmap = SKBitmap.FromImage(skimage);
 
@@ -214,7 +217,7 @@ namespace GuessGame
             }
 
             string answer = "no";
-            double resultamountWeights =0;
+            double resultamountWeights =-9999999;
             foreach (var item in answers)
             {
                 double amountWeights = 0.1;
