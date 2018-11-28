@@ -26,18 +26,9 @@ namespace GuessGame
 
         private void OnPainting(object sender, SKPaintSurfaceEventArgs e)
         {
-            // CLEARING THE SURFACE
-
-            // we get the current surface from the event args
             surface = e.Surface;
-            // then we get the canvas that we can draw on
             canvas = surface.Canvas;
-            // clear the canvas / view
             canvas.Clear(SKColors.White);
-            
-            // DRAWING TOUCH PATHS
-
-            // create the paint for the touch path
             var touchPathStroke = new SKPaint
             {
                 IsAntialias = true,
@@ -45,8 +36,6 @@ namespace GuessGame
                 Color = SKColors.Black,
                 StrokeWidth = 5
             };
-
-            // draw the paths
             foreach (var touchPath in temporaryPaths)
             {
                 canvas.DrawPath(touchPath.Value, touchPathStroke);
@@ -56,8 +45,8 @@ namespace GuessGame
                 canvas.DrawPath(touchPath, touchPathStroke);
             }
 
-                skimage = surface.Snapshot();
-         
+            skimage = surface.Snapshot();
+
         }
 
         private void OnTouch(object sender, SKTouchEventArgs e)
@@ -88,8 +77,8 @@ namespace GuessGame
 
             // we have handled these events
             e.Handled = true;
-           
-          
+
+
             ((SKCanvasView)sender).InvalidateSurface();
         }
 
@@ -147,47 +136,56 @@ namespace GuessGame
             {
                 boolImage.Add(item.ToFormsColor() == Color.Black);
             }
+            
             var namePicture = NamePicture.Text;
             if (string.IsNullOrEmpty(namePicture))
             {
                 DisplayAlert("Error", "empty name", "ok");
                 return;
             }
-            
-            var answer = new Answer();
-            if (answers.Any(x=>x.Name == namePicture))
-            {
-               answer = answers.FirstOrDefault(x=>x.Name == namePicture);
-                for (int i = 0; i < boolImage.Count; i++)
-                {
-                    if (boolImage[i])
-                    {
-                        answer.Weights[i] += 0.2;
-                    }
-                    else
-                    {
-                        answer.Weights[i] -= 0.05;
-                    }
-                   
-                }
-            }
-            else
-            {
-                answer.Name = namePicture;
-                foreach (var isBlackPic in boolImage)
-                {
-                    if (isBlackPic)
-                    {
-                        answer.Weights.Add(0.2);
-                    }
-                    else
-                    {
-                        answer.Weights.Add(0.001);
 
+            var answer = new Answer();
+            string check = "";
+            do
+            {
+                if (answers.Any(x => x.Name == namePicture))
+                {
+                    answer = answers.FirstOrDefault(x => x.Name == namePicture);
+                   
+
+                    for (int i = 0; i < boolImage.Count; i++)
+                    {
+                        if (boolImage[i])
+                        {
+                            answer.Weights[i] += 0.02;
+                        }
+                        else
+                        {
+                            answer.Weights[i] -= 0.005;
+                        }
                     }
                 }
-                answers.Add(answer);
-            }
+                else
+                {
+                    answer.Name = namePicture;
+                    
+                    foreach (var isBlackPic in boolImage)
+                    {
+                        if (isBlackPic)
+                        {
+                            answer.Weights.Add(0.02);
+                        }
+                        else
+                        {
+                            answer.Weights.Add(0.001);
+                        }
+                    }
+
+                    answers.Add(answer);
+                }
+                check = ChekeResult();
+            } while (check != namePicture);
+
             NamePicture.Text = string.Empty;
             Cleane_Click(null, null);
             DisplayAlert("Status", "Success", "ok");
@@ -196,9 +194,18 @@ namespace GuessGame
         private void Check_Click(object sender, EventArgs e)
         {
 
+            string answer = ChekeResult();
+            if (!string.IsNullOrEmpty(answer))
+            {
+                DisplayAlert("Answer", answer, "ok");
+            }
+        }
+
+        private string ChekeResult()
+        {
             if (skimage == null)
             {
-                return;
+                return null;
             }
             SKBitmap bitmap = SKBitmap.FromImage(skimage);
             var scaledBitmap = bitmap.Resize(new SKImageInfo(400, 400), SKBitmapResizeMethod.Triangle);
@@ -217,7 +224,7 @@ namespace GuessGame
             }
 
             string answer = "no";
-            double resultamountWeights =-9999999;
+            double resultamountWeights = double.MinValue;
             foreach (var item in answers)
             {
                 double amountWeights = 0.1;
@@ -226,13 +233,14 @@ namespace GuessGame
                     double valueImage = boolImage[i] ? 1 : 0;
                     amountWeights += valueImage * item.Weights[i];
                 }
-                if (resultamountWeights< amountWeights)
+                if (resultamountWeights < amountWeights)
                 {
                     resultamountWeights = amountWeights;
                     answer = item.Name;
                 }
             }
-            DisplayAlert("Answer", answer,"ok");
+
+            return answer;
         }
     }
     public class Answer
